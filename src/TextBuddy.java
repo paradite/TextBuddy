@@ -10,7 +10,7 @@ import java.util.Scanner;
  * Main Class for CS2103T CE1: TextBuddy
  * 
  * Assumption 1: The text file specified by the user could have already been
- * created.
+ * created and is not empty.
  * 
  * In this case, we show an warning to the user that the file may have been
  * created by other programs and the user should take caution when editing them.
@@ -39,6 +39,7 @@ public class TextBuddy {
 	private static final String ERROR_CREATING_FILE = "Error in creating the file.";
 	private static final String ERROR_READING_WRITING = "Error in reading or writing the file.";
 	private static final String ERROR_INVALID_COMMAND = "Invalid command";
+	private static final String ERROR_INVALID_LINE_NUMBER = "Invalid line number";
 
 	private static final String WARNING_FILE_EXISTS = "Warning: The file already exists and it not be created by TextBuddy. Please edit with caution.";
 
@@ -52,7 +53,8 @@ public class TextBuddy {
 	private static final String MESSAGE_WRITE_SUCCESS = "added to %1$s: \"%2$s\"";
 	private static final String MESSAGE_DISPLAY_CONTENT = "%1$d. %2$s";
 	private static final String MESSAGE_CLEAR_SUCCESS = "all content deleted from %1$s";
-
+	private static final String MESSAGE_DELETE_SUCCESS = "deleted from %1$s: \"%2$s\"";
+	private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
 
 	private static File file;
 	private static String fileName;
@@ -72,7 +74,7 @@ public class TextBuddy {
 				displayMessageNewLine(MESSAGE_INVALID_FILENAME);
 				System.exit(-1);
 			}
-			file = processFilename(fileName);
+			processFilename(fileName);
 			if (file == null) {
 				displayMessageNewLine(MESSAGE_INVALID_FILENAME);
 			} else {
@@ -107,7 +109,7 @@ public class TextBuddy {
 		case COMMAND_CLEAR:
 			return clearContent(command);
 		case COMMAND_DELETE:
-			return deleteLine(command);
+			return deleteOperation(command);
 		case COMMAND_DISPLAY:
 			return displayContent(command);
 		case COMMAND_EXIT:
@@ -121,23 +123,100 @@ public class TextBuddy {
 		System.exit(0);
 	}
 
-	private static String deleteLine(String command) {
+	private static String deleteOperation(String command) {
 		String[] parameters = getParameters(command);
 		if (parameters.length != 1) {
 			return ERROR_INVALID_COMMAND;
 		}
-		return null;
+		int lineNumberToDelete = Integer.parseInt(parameters[0]);
+		return deleteLine(lineNumberToDelete);
 	}
 
-	private static String clearContent(String command) {
-		// Delete and recreate the file to clear the content
+	private static String deleteLine(int lineNumberToDelete) {
+		// Read the content, skipping the line, clear the content, then save the
+		// new content
+		StringBuilder newContentBuilder = new StringBuilder();
 		try {
-			file.delete();
-			file.createNewFile();
-			return MESSAGE_CLEAR_SUCCESS;
+			String deletedLineContent = getLineAt(lineNumberToDelete);
+			String newContent = readAndSkipLine(lineNumberToDelete, newContentBuilder);
+			recreateFile();
+			writeNewContent(newContent);
+
+			return String.format(MESSAGE_DELETE_SUCCESS, file, deletedLineContent);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return ERROR_READING_WRITING;
+		}
+	}
+
+	private static void writeNewContent(String newContent) throws IOException {
+		setUpWriter();
+		fileWriter.write(newContent);
+		writeEndOfFileIndicator();
+		closeWriter();
+	}
+
+	private static String getLineAt(int lineNumberToDelete) throws IOException {
+		setUpReader();
+		int lineNumber = 1;
+		String lineString = fileReader.readLine();
+		while (lineString != null) {
+			if (lineNumber == lineNumberToDelete) {
+				closeReader();
+				return lineString;
+			}
+			lineString = fileReader.readLine();
+			lineNumber++;
+		}
+		closeReader();
+		return ERROR_INVALID_LINE_NUMBER;
+	}
+
+	private static String readAndSkipLine(int lineNumberToDelete, StringBuilder newContentBuilder)
+			throws IOException {
+		setUpReader();
+		int lineNumber = 1;
+		String lineString = fileReader.readLine();
+		while (lineString != null) {
+			// Skip the line to be deleted
+			if (lineNumber != lineNumberToDelete) {
+				// Add new line before all lines except first one
+				if (lineNumber > 1) {
+					newContentBuilder.append(System.getProperty("line.separator"));
+				}
+				newContentBuilder.append(lineString);
+			}
+			lineString = fileReader.readLine();
+			lineNumber++;
+		}
+		closeReader();
+		return newContentBuilder.toString();
+	}
+
+	private static String clearContent(String command) {
+		// Verify that the command does not have extra parameters
+		String[] parameters = getParameters(command);
+		if (parameters.length != 1 || !parameters[0].isEmpty()) {
+			return ERROR_INVALID_COMMAND;
+		}
+		// Delete and recreate the file to clear the content
+		boolean success = recreateFile();
+		if (success) {
+			return String.format(MESSAGE_CLEAR_SUCCESS, fileName);
+		} else {
+			return ERROR_READING_WRITING;
+		}
+
+	}
+
+	private static boolean recreateFile() {
+		try {
+			file.delete();
+			file.createNewFile();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -156,6 +235,10 @@ public class TextBuddy {
 		try {
 			setUpReader();
 			lineContent = fileReader.readLine();
+			// Handle the empty content
+			if(lineContent == null){
+				return String.format(MESSAGE_EMPTY_FILE, fileName);
+			}
 			contentToDisplay = processContent(lineContent);
 			closeReader();
 			return contentToDisplay;
@@ -187,14 +270,18 @@ public class TextBuddy {
 		try {
 			setUpWriter();
 			fileWriter.write(textToAdd);
-			// Use an new line marker as end of file indicator
-			fileWriter.newLine();
+			writeEndOfFileIndicator();
 			closeWriter();
 			return String.format(MESSAGE_WRITE_SUCCESS, fileName, textToAdd);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return ERROR_READING_WRITING;
 		}
+	}
+
+	private static void writeEndOfFileIndicator() throws IOException {
+		// Use an new line marker as end of file indicator
+		fileWriter.newLine();
 	}
 
 	private static String getCommandType(String command) {
@@ -223,9 +310,23 @@ public class TextBuddy {
 	 * @return File object to interact with
 	 */
 	private static File processFilename(String filename) {
-		File file = new File(filename);
+		file = new File(filename);
 		if (file.exists() && !file.isDirectory()) {
-			displayMessageNewLine(WARNING_FILE_EXISTS);
+			// Warn the user if the file is not empty
+			try {
+				setUpReader();
+				String lineContent = fileReader.readLine();
+				if (lineContent != null) {
+					displayMessageNewLine(WARNING_FILE_EXISTS);
+				}
+				closeReader();
+			} catch (IOException e) {
+				displayMessageNewLine(ERROR_READING_WRITING);
+				e.printStackTrace();
+				return null;
+			}
+
+
 			return file;
 		} else if (!file.exists()) {
 			try {
