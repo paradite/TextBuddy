@@ -33,6 +33,8 @@ public class TextBuddy {
     private static final String COMMAND_DELETE = "delete";
     private static final String COMMAND_CLEAR = "clear";
     private static final String COMMAND_ADD = "add";
+    private static final String COMMAND_SORT = "sort";
+    private static final String COMMAND_SEARCH = "search";
 
     private static final String ERROR_CREATING_FILE = "Error in creating the file.";
     private static final String ERROR_READING_WRITING = "Error in reading or writing the file.";
@@ -119,9 +121,23 @@ public class TextBuddy {
                 return displayContent(command);
             case COMMAND_EXIT :
                 return exitProgram(command);
+            case COMMAND_SORT :
+                return sortContent(command);
+            case COMMAND_SEARCH :
+                return searchContent(command);
             default :
                 return ERROR_INVALID_COMMAND;
         }
+    }
+
+    private static String sortContent(String command) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static String searchContent(String command) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**
