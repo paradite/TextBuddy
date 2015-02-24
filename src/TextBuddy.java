@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Scanner;
 
 /**
@@ -55,6 +58,7 @@ public class TextBuddy {
     private static final String MESSAGE_CLEAR_SUCCESS = "all content deleted from %1$s";
     private static final String MESSAGE_DELETE_SUCCESS = "deleted from %1$s: \"%2$s\"";
     private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
+    private static final String MESSAGE_SORT_SUCCESS = "Content of %1$s has been sorted";
 
     private static Scanner scanner = new Scanner(System.in);
     private static File file;
@@ -131,8 +135,48 @@ public class TextBuddy {
     }
 
     private static String sortContent(String command) {
-        // TODO Auto-generated method stub
-        return null;
+        StringBuilder newContentBuilder = new StringBuilder();
+        ArrayList<String> contentArrayList = new ArrayList<String>();
+        try {
+            readContentIntoArrayList(contentArrayList);
+            if (contentArrayList.isEmpty()) {
+                return String.format(MESSAGE_EMPTY_FILE, fileName);
+            } else {
+                Collections.sort(contentArrayList);
+                buildContentFromArrayList(newContentBuilder, contentArrayList);
+                recreateFile();
+                writeNewContent(newContentBuilder.toString());
+                return String.format(MESSAGE_SORT_SUCCESS, fileName);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ERROR_READING_WRITING;
+        }
+    }
+
+    private static void buildContentFromArrayList(StringBuilder builder,
+            ArrayList<String> list) {
+        Iterator<String> iterator = list.iterator();
+        int lineNumber = 1;
+        while (iterator.hasNext()) {
+            // Add new line before all lines except first one
+            if (lineNumber > 1) {
+                builder.append(System.lineSeparator());
+            }
+            builder.append(iterator.next());
+            lineNumber++;
+        }
+    }
+
+    private static void readContentIntoArrayList(ArrayList<String> arrayList)
+            throws IOException {
+        setUpReader();
+        String lineString = fileReader.readLine();
+        while (lineString != null) {
+            arrayList.add(lineString);
+            lineString = fileReader.readLine();
+        }
+        closeReader();
     }
 
     private static String searchContent(String command) {
@@ -183,7 +227,7 @@ public class TextBuddy {
         try {
             String deletedLineContent = getLineAt(lineNumberToDelete);
             String newContent = readAndSkipLine(lineNumberToDelete);
-            isFileRecreated();
+            recreateFile();
             writeNewContent(newContent);
 
             return String.format(MESSAGE_DELETE_SUCCESS, file,
@@ -250,8 +294,7 @@ public class TextBuddy {
             if (lineNumber != lineNumberToDelete) {
                 // Add new line before all lines except first one
                 if (lineNumber > 1) {
-                    newContentBuilder.append(System
-                            .getProperty("line.separator"));
+                    newContentBuilder.append(System.lineSeparator());
                 }
                 newContentBuilder.append(lineString);
             }
@@ -275,29 +318,23 @@ public class TextBuddy {
             return ERROR_INVALID_COMMAND;
         }
         // Delete and recreate the file to clear the content
-        boolean success = isFileRecreated();
-        if (success) {
+        try {
+            recreateFile();
             return String.format(MESSAGE_CLEAR_SUCCESS, fileName);
-        } else {
+        } catch (IOException e) {
             return ERROR_READING_WRITING;
         }
-
     }
 
     /**
      * Method to recreate the file
      * 
-     * @return boolean signal for success or failure
+     * @throws IOException
+     * 
      */
-    private static boolean isFileRecreated() {
-        try {
-            file.delete();
-            file.createNewFile();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    private static void recreateFile() throws IOException {
+        file.delete();
+        file.createNewFile();
     }
 
     /**
@@ -333,12 +370,10 @@ public class TextBuddy {
                 return String.format(MESSAGE_EMPTY_FILE, fileName);
             }
 
-            // Start formatting the content
             StringBuilder contentToDisplayBuilder = new StringBuilder();
             int lineNumber = 1;
             while (lineContent != null) {
-                // Format each line according to the format given with line
-                // number
+                // Format each line according to the format given
                 lineContent = String.format(MESSAGE_DISPLAY_CONTENT,
                         lineNumber, lineContent);
                 // Add new line before all lines except first one

@@ -26,7 +26,7 @@ public class TestTDD {
     @Test
     public void testSortContent() {
         // Test empty file
-        TextBuddy.executeCommand(sortCommand);
+        assertEquals("test is empty", TextBuddy.executeCommand(sortCommand));
         assertEquals("test is empty", TextBuddy.executeCommand(displayCommand));
 
         // Test 1 line of file
@@ -38,8 +38,21 @@ public class TestTDD {
         // Test 2 lines of file
         String c2 = "add fox is awesome";
         TextBuddy.executeCommand(c2);
+        assertEquals("1. fox is cool\n2. fox is awesome",
+                TextBuddy.executeCommand(displayCommand));
+
         TextBuddy.executeCommand(sortCommand);
         assertEquals("1. fox is awesome\n2. fox is cool",
+                TextBuddy.executeCommand(displayCommand));
+
+        // Test empty line, should be sorted to the top
+        String c3 = "add";
+        TextBuddy.executeCommand(c3);
+        assertEquals("1. fox is awesome\n2. fox is cool\n3. ",
+                TextBuddy.executeCommand(displayCommand));
+
+        TextBuddy.executeCommand(sortCommand);
+        assertEquals("1. \n2. fox is awesome\n3. fox is cool",
                 TextBuddy.executeCommand(displayCommand));
     }
 
