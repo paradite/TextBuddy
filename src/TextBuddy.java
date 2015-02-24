@@ -43,6 +43,7 @@ public class TextBuddy {
     private static final String ERROR_READING_WRITING = "Error in reading or writing the file.";
     private static final String ERROR_INVALID_COMMAND = "Invalid command";
     private static final String ERROR_INVALID_LINE_NUMBER = "Invalid line number";
+    private static final String ERROR_SEARCH_KEYWORD_EMPTY = "Search keyword cannot be empty";
 
     private static final String WARNING_FILE_EXISTS = "Warning: The file already exists, proceed with caution.";
 
@@ -137,6 +138,10 @@ public class TextBuddy {
 
     private static String searchContent(String command) {
         ArrayList<String> contentArrayList = new ArrayList<String>();
+        String keyword = getParameterString(command);
+        if (keyword == null || keyword.isEmpty()) {
+            return ERROR_SEARCH_KEYWORD_EMPTY;
+        }
         try {
             readContentIntoArrayList(contentArrayList);
             if (contentArrayList.isEmpty()) {
@@ -475,6 +480,16 @@ public class TextBuddy {
         String parameterString = removeFirstWord(command.trim());
         String[] parameters = parameterString.split("\\s+");
         return parameters;
+    }
+
+    /**
+     * Method to get the the parameter as a single string
+     * 
+     * @param command
+     * @return parameter as a single String
+     */
+    public static String getParameterString(String command) {
+        return removeFirstWord(command.trim());
     }
 
     /**

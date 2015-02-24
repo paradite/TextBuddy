@@ -26,13 +26,20 @@ public class TestTDD {
 
     @Test
     public void testSearchContent() {
-        String command = String.format(searchCommand, "");
+        String command;
+
         // test searching empty string
+        command = String.format(searchCommand, "");
         assertEquals("Search keyword cannot be empty",
                 TextBuddy.executeCommand(command));
 
-        command = String.format(searchCommand, "word");
+        // White spaces should be treated as empty as well
+        command = String.format(searchCommand, "   ");
+        assertEquals("Search keyword cannot be empty",
+                TextBuddy.executeCommand(command));
+
         // test empty file
+        command = String.format(searchCommand, "word");
         assertEquals("No search result in test.txt",
                 TextBuddy.executeCommand(command));
 
