@@ -10,6 +10,7 @@ public class TestTDD {
 
     String displayCommand = "display";
     String sortCommand = "sort";
+    String searchCommand = "search %1$s";
 
     @Before
     public void setUp() {
@@ -21,6 +22,15 @@ public class TestTDD {
     @After
     public void tearDown() {
         TextBuddy.DeleteFile();
+    }
+
+    @Test
+    public void testSearchContent() {
+
+        String command = String.format(searchCommand, "word");
+        // Test empty file
+        assertEquals("No search result", TextBuddy.executeCommand(command));
+
     }
 
     @Test
