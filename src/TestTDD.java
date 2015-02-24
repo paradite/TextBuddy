@@ -45,15 +45,31 @@ public class TestTDD {
 
         // test searching in 1 line of file
         String c = "add fox is cool";
-        command = String.format(searchCommand, "is");
         TextBuddy.executeCommand(c);
         // Keyword is present, result should be the formatted line
+        command = String.format(searchCommand, "is");
         assertEquals("1. fox is cool", TextBuddy.executeCommand(command));
-        // Keyword is not present, result show message for no search result
+        // Keyword is not present, show message for no search result
         command = String.format(searchCommand, "happy");
         assertEquals("No search result in test.txt",
                 TextBuddy.executeCommand(command));
 
+        // test searching in 2 lines of file
+        String c2 = "add fox is awesome";
+        TextBuddy.executeCommand(c2);
+        // Keyword present in both lines, both lines should be displayed
+        command = String.format(searchCommand, "is");
+        assertEquals("1. fox is cool\n2. fox is awesome",
+                TextBuddy.executeCommand(command));
+        // Keyword present in one line, that line should be displayed
+        command = String.format(searchCommand, "awesome");
+        assertEquals("2. fox is awesome",
+                TextBuddy.executeCommand(command));
+        // Keyword not present in any of the lines, show message for no search
+        // result
+        command = String.format(searchCommand, "happy");
+        assertEquals("No search result in test.txt",
+                TextBuddy.executeCommand(command));
     }
 
     @Test
