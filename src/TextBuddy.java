@@ -332,38 +332,30 @@ public class TextBuddy {
             if (lineContent == null) {
                 return String.format(MESSAGE_EMPTY_FILE, fileName);
             }
-            contentToDisplay = processContent(lineContent);
+
+            // Start formatting the content
+            StringBuilder contentToDisplayBuilder = new StringBuilder();
+            int lineNumber = 1;
+            while (lineContent != null) {
+                // Format each line according to the format given with line
+                // number
+                lineContent = String.format(MESSAGE_DISPLAY_CONTENT,
+                        lineNumber, lineContent);
+                // Add new line before all lines except first one
+                if (lineNumber > 1) {
+                    contentToDisplayBuilder.append(System.lineSeparator());
+                }
+                contentToDisplayBuilder.append(lineContent);
+                lineNumber++;
+                lineContent = fileReader.readLine();
+            }
+            contentToDisplay = contentToDisplayBuilder.toString();
             closeReader();
             return contentToDisplay;
         } catch (IOException e) {
             e.printStackTrace();
             return ERROR_READING_WRITING;
         }
-    }
-
-    /**
-     * Method to read the file line by line and format the content as required
-     * 
-     * @param lineContent
-     * @return formatted content as String
-     * @throws IOException
-     */
-    private static String processContent(String lineContent) throws IOException {
-        StringBuilder contentToDisplayBuilder = new StringBuilder();
-        int lineNumber = 1;
-        while (lineContent != null) {
-            // Format each line according to the format given with line number
-            lineContent = String.format(MESSAGE_DISPLAY_CONTENT, lineNumber,
-                    lineContent);
-            // Add new line before all lines except first one
-            if (lineNumber > 1) {
-                contentToDisplayBuilder.append(System.lineSeparator());
-            }
-            contentToDisplayBuilder.append(lineContent);
-            lineNumber++;
-            lineContent = fileReader.readLine();
-        }
-        return contentToDisplayBuilder.toString();
     }
 
     /**
