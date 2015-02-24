@@ -43,6 +43,11 @@ public class TestTDD {
         assertEquals("No search result in test.txt",
                 TextBuddy.executeCommand(command));
 
+        // test searching in 1 line of file
+        String c = "add fox is cool";
+        command = String.format(searchCommand, "is");
+        TextBuddy.executeCommand(c);
+        assertEquals("1. fox is cool", TextBuddy.executeCommand(searchCommand));
 
     }
 
