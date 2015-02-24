@@ -97,11 +97,12 @@ public class TextBuddy {
      * Method to take user inputs and respond
      */
     private static void readCommands() {
+        displayMessageInline(MESSAGE_WAIT_FOR_COMMAND);
         while (scanner.hasNextLine()) {
-            displayMessageInline(MESSAGE_WAIT_FOR_COMMAND);
             String command = scanner.nextLine();
             String result = executeCommand(command);
             displayMessageNewLine(result);
+            displayMessageInline(MESSAGE_WAIT_FOR_COMMAND);
         }
     }
 
@@ -137,6 +138,7 @@ public class TextBuddy {
     }
 
     private static String searchContent(String command) {
+        StringBuilder newContentBuilder = new StringBuilder();
         ArrayList<String> contentArrayList = new ArrayList<String>();
         String keyword = getParameterString(command);
         if (keyword == null || keyword.isEmpty()) {
@@ -147,10 +149,30 @@ public class TextBuddy {
             if (contentArrayList.isEmpty()) {
                 return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
             }
-            if (contentArrayList.get(0).contains(keyword)) {
-                return formatLineForDisplay(contentArrayList.get(0), 1);
+
+            Iterator<String> iterator = contentArrayList.iterator();
+            int lineNumber = 1;
+            boolean firstLine = true;
+            while (iterator.hasNext()) {
+                String lineContent = iterator.next();
+                if (lineContent.contains(keyword)) {
+                    // Add new line before all lines except first one
+                    if (!firstLine) {
+                        newContentBuilder.append(System.lineSeparator());
+                    } else {
+                        firstLine = false;
+                    }
+                    newContentBuilder.append(formatLineForDisplay(lineContent,
+                            lineNumber));
+
+                }
+                lineNumber++;
             }
-            return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
+            if (newContentBuilder.length() == 0) {
+                return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
+            } else {
+                return newContentBuilder.toString();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return ERROR_READING_WRITING;
