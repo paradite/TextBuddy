@@ -70,6 +70,22 @@ public class TestTDD {
         command = String.format(searchCommand, "happy");
         assertEquals("No search result in test.txt",
                 TextBuddy.executeCommand(command));
+
+        // test searching in more than 2 lines of file
+        String c3 = "add happy is love";
+        TextBuddy.executeCommand(c3);
+        // Keyword present in all lines, all lines should be displayed
+        command = String.format(searchCommand, "is");
+        assertEquals("1. fox is cool\n2. fox is awesome\n3. happy is love",
+                TextBuddy.executeCommand(command));
+        // Keyword present in one line, that line should be displayed
+        command = String.format(searchCommand, "awesome");
+        assertEquals("2. fox is awesome", TextBuddy.executeCommand(command));
+        // Keyword not present in any of the lines, show message for no search
+        // result
+        command = String.format(searchCommand, "CS");
+        assertEquals("No search result in test.txt",
+                TextBuddy.executeCommand(command));
     }
 
     @Test
