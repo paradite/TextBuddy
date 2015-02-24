@@ -147,7 +147,10 @@ public class TextBuddy {
             if (contentArrayList.isEmpty()) {
                 return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
             }
-            return null;
+            if (contentArrayList.get(0).contains(keyword)) {
+                return formatLineForDisplay(contentArrayList.get(0), 1);
+            }
+            return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
         } catch (IOException e) {
             e.printStackTrace();
             return ERROR_READING_WRITING;
@@ -389,8 +392,7 @@ public class TextBuddy {
             int lineNumber = 1;
             while (lineContent != null) {
                 // Format each line according to the format given
-                lineContent = String.format(MESSAGE_DISPLAY_CONTENT,
-                        lineNumber, lineContent);
+                lineContent = formatLineForDisplay(lineContent, lineNumber);
                 // Add new line before all lines except first one
                 if (lineNumber > 1) {
                     contentToDisplayBuilder.append(System.lineSeparator());
@@ -406,6 +408,13 @@ public class TextBuddy {
             e.printStackTrace();
             return ERROR_READING_WRITING;
         }
+    }
+
+    private static String formatLineForDisplay(String lineContent,
+            int lineNumber) {
+        lineContent = String.format(MESSAGE_DISPLAY_CONTENT,
+                lineNumber, lineContent);
+        return lineContent;
     }
 
     /**

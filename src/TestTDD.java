@@ -47,7 +47,12 @@ public class TestTDD {
         String c = "add fox is cool";
         command = String.format(searchCommand, "is");
         TextBuddy.executeCommand(c);
-        assertEquals("1. fox is cool", TextBuddy.executeCommand(searchCommand));
+        // Keyword is present, result should be the formatted line
+        assertEquals("1. fox is cool", TextBuddy.executeCommand(command));
+        // Keyword is not present, result show message for no search result
+        command = String.format(searchCommand, "happy");
+        assertEquals("No search result in test.txt",
+                TextBuddy.executeCommand(command));
 
     }
 
