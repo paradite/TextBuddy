@@ -26,27 +26,32 @@ public class TestTDD {
 
     @Test
     public void testSearchContent() {
+        String command = String.format(searchCommand, "");
+        // test searching empty string
+        assertEquals("Search keyword cannot be empty",
+                TextBuddy.executeCommand(command));
 
-        String command = String.format(searchCommand, "word");
-        // test.txt empty file
+        command = String.format(searchCommand, "word");
+        // test empty file
         assertEquals("No search result in test.txt",
                 TextBuddy.executeCommand(command));
+
 
     }
 
     @Test
     public void testSortContent() {
-        // test.txt empty file
+        // test empty file
         assertEquals("test.txt is empty", TextBuddy.executeCommand(sortCommand));
         assertEquals("test.txt is empty", TextBuddy.executeCommand(displayCommand));
 
-        // test.txt 1 line of file
+        // test 1 line of file
         String c = "add fox is cool";
         TextBuddy.executeCommand(c);
         TextBuddy.executeCommand(sortCommand);
         assertEquals("1. fox is cool", TextBuddy.executeCommand(displayCommand));
 
-        // test.txt 2 lines of file
+        // test 2 lines of file
         String c2 = "add fox is awesome";
         TextBuddy.executeCommand(c2);
         assertEquals("1. fox is cool\n2. fox is awesome",
@@ -56,7 +61,7 @@ public class TestTDD {
         assertEquals("1. fox is awesome\n2. fox is cool",
                 TextBuddy.executeCommand(displayCommand));
 
-        // test.txt empty line, should be sorted to the top
+        // test empty line, should be sorted to the top
         String c3 = "add";
         TextBuddy.executeCommand(c3);
         assertEquals("1. fox is awesome\n2. fox is cool\n3. ",
@@ -70,15 +75,15 @@ public class TestTDD {
     @Test
     public void testDisplayContent() {
 
-        // test.txt empty file
+        // test empty file
         assertEquals("test.txt is empty", TextBuddy.executeCommand(displayCommand));
 
-        // test.txt 1 line of file
+        // test 1 line of file
         String c = "add fox is cool";
         TextBuddy.executeCommand(c);
         assertEquals("1. fox is cool", TextBuddy.executeCommand(displayCommand));
 
-        // test.txt 2 lines of file
+        // test 2 lines of file
         String c2 = "add fox is awesome";
         TextBuddy.executeCommand(c2);
         assertEquals("1. fox is cool\n2. fox is awesome",
