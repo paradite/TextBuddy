@@ -56,7 +56,7 @@ public class TextBuddy {
 
     private static Scanner scanner = new Scanner(System.in);
     private static File file;
-    private static String fileName;
+    public static String fileName;
     private static BufferedReader fileReader;
     private static BufferedWriter fileWriter;
 
@@ -103,7 +103,7 @@ public class TextBuddy {
      * @param command
      * @return The result of the execution as String
      */
-    private static String executeCommand(String command) {
+    public static String executeCommand(String command) {
         if (command.trim().isEmpty()) {
             return ERROR_INVALID_COMMAND;
         }
@@ -291,7 +291,7 @@ public class TextBuddy {
      * @return the formatted content as String if argument is valid, otherwise
      *         return the error signal as String
      */
-    private static String displayContent(String command) {
+    public static String displayContent(String command) {
         String[] parameters = getParameters(command);
         // Make sure there are no extra parameters for display
         if (parameters.length != 1 || !parameters[0].isEmpty()) {
@@ -431,7 +431,7 @@ public class TextBuddy {
      * @param filename
      * @return File object to interact with
      */
-    private static File processFilename(String filename) {
+    public static File processFilename(String filename) {
         file = new File(filename);
         if (file.exists() && !file.isDirectory()) {
             // Do not warn the user if the file is not empty
@@ -543,5 +543,9 @@ public class TextBuddy {
             displayMessageNewLine(ERROR_READING_WRITING);
             e.printStackTrace();
         }
+    }
+
+    public static void DeleteFile() {
+        file.delete();
     }
 }
