@@ -73,7 +73,6 @@ public class TextBuddy {
      * 
      * @param args
      */
-
     public static void main(String[] args) {
         if (isValidArgument(args)) {
             fileName = args[0];
@@ -137,6 +136,12 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method for handling search operations
+     * 
+     * @param command
+     * @return search result formatted for display as String
+     */
     private static String searchContent(String command) {
         StringBuilder newContentBuilder = new StringBuilder();
         ArrayList<String> contentArrayList = new ArrayList<String>();
@@ -150,24 +155,7 @@ public class TextBuddy {
                 return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
             }
 
-            Iterator<String> iterator = contentArrayList.iterator();
-            int lineNumber = 1;
-            boolean firstLine = true;
-            while (iterator.hasNext()) {
-                String lineContent = iterator.next();
-                if (lineContent.contains(keyword)) {
-                    // Add new line before all lines except first one
-                    if (!firstLine) {
-                        newContentBuilder.append(System.lineSeparator());
-                    } else {
-                        firstLine = false;
-                    }
-                    newContentBuilder.append(formatLineForDisplay(lineContent,
-                            lineNumber));
-
-                }
-                lineNumber++;
-            }
+            buildSearchResult(newContentBuilder, contentArrayList, keyword);
             if (newContentBuilder.length() == 0) {
                 return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
             } else {
@@ -179,6 +167,45 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method to build up the formatted search result String from the content
+     * 
+     * @param newContentBuilder
+     *            StringBuilder for building the search result String
+     * @param contentArrayList
+     *            Content of the file in an ArrayList
+     * @param keyword
+     *            The keyword used for searching
+     */
+    private static void buildSearchResult(StringBuilder newContentBuilder,
+            ArrayList<String> contentArrayList, String keyword) {
+        Iterator<String> iterator = contentArrayList.iterator();
+        int lineNumber = 1;
+        boolean firstLine = true;
+        while (iterator.hasNext()) {
+            String lineContent = iterator.next();
+            if (lineContent.contains(keyword)) {
+                // Add new line before all lines except first one
+                if (!firstLine) {
+                    newContentBuilder.append(System.lineSeparator());
+                } else {
+                    firstLine = false;
+                }
+                newContentBuilder.append(formatLineForDisplay(lineContent,
+                        lineNumber));
+
+            }
+            lineNumber++;
+        }
+    }
+
+    /**
+     * Method for handling sort operations
+     * 
+     * @param command
+     * @return message for display after sorting operation to signal success or
+     *         failure, as String
+     */
     private static String sortContent(String command) {
         StringBuilder newContentBuilder = new StringBuilder();
         ArrayList<String> contentArrayList = new ArrayList<String>();
@@ -199,6 +226,15 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method to construct the content String used for external storage from an
+     * ArrayList containing the content
+     * 
+     * @param builder
+     *            StringBuilder to construct the String
+     * @param list
+     *            ArrayList containing the content
+     */
     private static void buildContentFromArrayList(StringBuilder builder,
             ArrayList<String> list) {
         Iterator<String> iterator = list.iterator();
@@ -213,6 +249,14 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method to read the content from the external text file into an ArrayList
+     * for future operations
+     * 
+     * @param arrayList
+     *            ArrayList to store the content
+     * @throws IOException
+     */
     private static void readContentIntoArrayList(ArrayList<String> arrayList)
             throws IOException {
         setUpReader();
@@ -432,6 +476,16 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method to format a line of content for displaying, involving adding the
+     * line number
+     * 
+     * @param lineContent
+     *            Content to be formatted
+     * @param lineNumber
+     *            Line number of the content
+     * @return Formatted content used for displaying as String
+     */
     private static String formatLineForDisplay(String lineContent,
             int lineNumber) {
         lineContent = String.format(MESSAGE_DISPLAY_CONTENT,
@@ -460,12 +514,12 @@ public class TextBuddy {
     }
 
     /**
-     * Method to write the end of file indicator for the text file
+     * Method to write the end of file indicator for the text file, using an new
+     * line marker as end of file indicator
      * 
      * @throws IOException
      */
     private static void writeEndOfFileIndicator() throws IOException {
-        // Use an new line marker as end of file indicator
         fileWriter.newLine();
     }
 
@@ -644,6 +698,9 @@ public class TextBuddy {
         }
     }
 
+    /**
+     * Method to delete the file
+     */
     public static void DeleteFile() {
         file.delete();
     }
