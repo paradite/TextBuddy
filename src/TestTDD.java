@@ -14,8 +14,8 @@ public class TestTDD {
 
     @Before
     public void setUp() {
-        TextBuddy.fileName = "test";
-        TextBuddy.processFilename("test");
+        TextBuddy.fileName = "test.txt";
+        TextBuddy.processFilename("test.txt");
 
     }
 
@@ -28,24 +28,25 @@ public class TestTDD {
     public void testSearchContent() {
 
         String command = String.format(searchCommand, "word");
-        // Test empty file
-        assertEquals("No search result", TextBuddy.executeCommand(command));
+        // test.txt empty file
+        assertEquals("No search result in test.txt",
+                TextBuddy.executeCommand(command));
 
     }
 
     @Test
     public void testSortContent() {
-        // Test empty file
-        assertEquals("test is empty", TextBuddy.executeCommand(sortCommand));
-        assertEquals("test is empty", TextBuddy.executeCommand(displayCommand));
+        // test.txt empty file
+        assertEquals("test.txt is empty", TextBuddy.executeCommand(sortCommand));
+        assertEquals("test.txt is empty", TextBuddy.executeCommand(displayCommand));
 
-        // Test 1 line of file
+        // test.txt 1 line of file
         String c = "add fox is cool";
         TextBuddy.executeCommand(c);
         TextBuddy.executeCommand(sortCommand);
         assertEquals("1. fox is cool", TextBuddy.executeCommand(displayCommand));
 
-        // Test 2 lines of file
+        // test.txt 2 lines of file
         String c2 = "add fox is awesome";
         TextBuddy.executeCommand(c2);
         assertEquals("1. fox is cool\n2. fox is awesome",
@@ -55,7 +56,7 @@ public class TestTDD {
         assertEquals("1. fox is awesome\n2. fox is cool",
                 TextBuddy.executeCommand(displayCommand));
 
-        // Test empty line, should be sorted to the top
+        // test.txt empty line, should be sorted to the top
         String c3 = "add";
         TextBuddy.executeCommand(c3);
         assertEquals("1. fox is awesome\n2. fox is cool\n3. ",
@@ -69,15 +70,15 @@ public class TestTDD {
     @Test
     public void testDisplayContent() {
 
-        // Test empty file
-        assertEquals("test is empty", TextBuddy.executeCommand(displayCommand));
+        // test.txt empty file
+        assertEquals("test.txt is empty", TextBuddy.executeCommand(displayCommand));
 
-        // Test 1 line of file
+        // test.txt 1 line of file
         String c = "add fox is cool";
         TextBuddy.executeCommand(c);
         assertEquals("1. fox is cool", TextBuddy.executeCommand(displayCommand));
 
-        // Test 2 lines of file
+        // test.txt 2 lines of file
         String c2 = "add fox is awesome";
         TextBuddy.executeCommand(c2);
         assertEquals("1. fox is cool\n2. fox is awesome",

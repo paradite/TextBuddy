@@ -59,6 +59,7 @@ public class TextBuddy {
     private static final String MESSAGE_DELETE_SUCCESS = "deleted from %1$s: \"%2$s\"";
     private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
     private static final String MESSAGE_SORT_SUCCESS = "Content of %1$s has been sorted";
+    private static final String MESSAGE_SEARCH_NOT_FOUND = "No search result in %1$s";
 
     private static Scanner scanner = new Scanner(System.in);
     private static File file;
@@ -134,6 +135,20 @@ public class TextBuddy {
         }
     }
 
+    private static String searchContent(String command) {
+        ArrayList<String> contentArrayList = new ArrayList<String>();
+        try {
+            readContentIntoArrayList(contentArrayList);
+            if (contentArrayList.isEmpty()) {
+                return String.format(MESSAGE_SEARCH_NOT_FOUND, fileName);
+            }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ERROR_READING_WRITING;
+        }
+    }
+
     private static String sortContent(String command) {
         StringBuilder newContentBuilder = new StringBuilder();
         ArrayList<String> contentArrayList = new ArrayList<String>();
@@ -177,11 +192,6 @@ public class TextBuddy {
             lineString = fileReader.readLine();
         }
         closeReader();
-    }
-
-    private static String searchContent(String command) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /**
