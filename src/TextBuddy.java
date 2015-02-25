@@ -77,7 +77,7 @@ public class TextBuddy {
         if (isValidArgument(args)) {
             fileName = args[0];
             if (fileName.isEmpty()) {
-                displayMessageNewLine(MESSAGE_INVALID_FILENAME);
+                displayMessageNewLine(MESSAGE_NO_FILENAME);
                 System.exit(-1);
             }
             processFilename(fileName);
@@ -372,16 +372,22 @@ public class TextBuddy {
         StringBuilder newContentBuilder = new StringBuilder();
         setUpReader();
         int lineNumber = 1;
+        boolean firstLine = true;
         String lineString = fileReader.readLine();
         while (lineString != null) {
             // Skip the line to be deleted
-            if (lineNumber != lineNumberToDelete) {
-                // Add new line before all lines except first one
-                if (lineNumber > 1) {
-                    newContentBuilder.append(System.lineSeparator());
-                }
-                newContentBuilder.append(lineString);
+            if (lineNumber == lineNumberToDelete) {
+                lineString = fileReader.readLine();
+                lineNumber++;
+                continue;
             }
+            // Add new line before all lines except first one
+            if (!firstLine) {
+                newContentBuilder.append(System.lineSeparator());
+            } else {
+                firstLine = false;
+            }
+            newContentBuilder.append(lineString);
             lineString = fileReader.readLine();
             lineNumber++;
         }

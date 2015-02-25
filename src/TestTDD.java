@@ -123,7 +123,6 @@ public class TestTDD {
 
     @Test
     public void testDisplayContent() {
-
         // test empty file
         assertEquals("test.txt is empty", TextBuddy.executeCommand(displayCommand));
 
@@ -140,23 +139,17 @@ public class TestTDD {
 
     }
 
+    // Tests for utility methods
     // Empty string
     String s1 = "";
-
     // Normal string
     String s = "first second third";
-
     // String with dash and underline, should be ignored
     String s2 = "first second-word third_word";
-
     // String with numbers
     String s3 = "1st secondword third 4";
-
-    // String with trailing spaces
+    // String with leading and trailing spaces
     String s4 = "  1st.word second.word third 4   ";
-
-    // String with duplicated elements
-    String s5 = "  1st.word 1st.word third 4 4  ";
 
     @Test
     public void testGetFirstWord() {
@@ -188,6 +181,10 @@ public class TestTDD {
         assertEquals("second-word third_word", TextBuddy.removeFirstWord(s2));
         assertEquals("secondword third 4", TextBuddy.removeFirstWord(s3));
         assertEquals("second.word third 4", TextBuddy.removeFirstWord(s4));
+
+        // String with duplicated elements, only first instance should be
+        // removed
+        String s5 = "  1st.word 1st.word third 4 4  ";
         assertEquals("1st.word third 4 4", TextBuddy.removeFirstWord(s5));
     }
 }
